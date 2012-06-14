@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Simmons | Car Game</title>
+		<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css">
+		<style type="text/css">
+			div.missing {
+				margin: auto;
+				position: relative;
+				top: 50%;
+				width: 193px;
+			}
+			div.missing a {
+				height: 63px;
+				position: relative;
+				top: -31px;
+			}
+			div.missing img {
+				border-width: 0px;
+			}
+			div#unityPlayer {
+				cursor: default;
+				height: 349px;
+				width: 620px;
+				margin: 0 auto;
+				visibility: hidden;
+
+			}
+			.hero-unit { padding: 30px 60px;  }
+			.hero-unit p { font-size: 14px; }
+			.checked { margin-left: 16px; }
+			h2 { line-height: 28px; }
+			body { background: #777; }
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="hero-unit">
+				<div id="unityPlayer">
+					<div class="missing">
+						<a href="http://unity3d.com/webplayer/" title="Unity Web Player. Install now!">
+							<img alt="Unity Web Player. Install now!" src="http://webplayer.unity3d.com/installation/getunity.png" width="193" height="63" />
+						</a>
+					</div>
+				</div>
+				<br />
+				<div class="control-group">
+					<h2>Dan Simmons</h2>
+					<h2>CS4455 Milestone 1</h2>
+					<br/>
+					<h4 id="textContainer"></h4>
+					<p><button class="btn btn-large" id="play">Play! <i class="icon-play icon-white"></i></button></p>
+				</div>
+				<hr />
+			</div>
+			<div class="well">
+			<h4>For the grader:</h4>
+			<br />
+			<div class="row">
+				<div class="span5">
+					<h4>todo...</h4>
+				</div>
+				<div  class="span6">
+				</div>
+			</div>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script type="text/javascript" src="http://webplayer.unity3d.com/download_webplayer-3.x/3.0/uo/UnityObject.js"></script>
+
+		<!-- Sooooo stupid. Internet Explorer compatability hack. -->
+		<script language='VBScript'>
+			function detectUnityWebPlayerActiveX
+			    on error resume next
+			    dim tControl, res, ua, re, matches, major
+			    res = 0
+			    set tControl = CreateObject("UnityWebPlayer.UnityWebPlayer.1")
+			    if IsObject(tControl) then
+				if tControl.GetPluginVersion() = "2.5.0f5" then
+				    ua = Navigator.UserAgent
+				    set re = new RegExp
+				    re.Pattern = "Windows NT (\d+)\."
+				    set matches = re.Execute(ua)
+				    if matches.Count = 1 then
+					major = CInt(matches(0).SubMatches(0))
+					if major < 6 then
+					    res = 1
+					end if
+				    end if
+				else
+				    res = 1
+				end if
+			    end if
+			    detectUnityWebPlayerActiveX = res
+			end function
+		</script>
+		
+		<script type="text/javascript">
+			$(function() {
+					function GetUnity() {
+						if (typeof unityObject != "undefined") {
+							return unityObject.getObjectById("unityPlayer");
+						}
+						return null;
+					}
+					function detectUnity() {
+						if (navigator.appVersion.indexOf("MSIE") != -1 && navigator.appVersion.toLowerCase().indexOf("win") != -1) {
+							return detectUnityWebPlayerActiveX();
+						} else if (navigator.mimeTypes && navigator.mimeTypes['application/vnd.unity']) {
+							return (navigator.mimeTypes['application/vnd.unity'].enabledPlugin && navigator.plugins && navigator.plugins['Unity Player']);
+						}
+					}
+
+					if (typeof unityObject != "undefined") {
+						var _textContainer = $('#textContainer');
+						var x = 0;
+						_textContainer.text('Checking for Unity3D Web Player.');
+						var id = setInterval(function() {
+							_textContainer.text(_textContainer.text() + '.');
+							if (++x >= 5) window.clearInterval(id);
+						}, 400);
+						if (!detectUnity()) {
+                            setTimeout(function() {
+							_textContainer.text('No bueno :(');
+							$('#unityPlayer').css('visibility', 'visible');
+							$('#play').addClass('btn-danger').addClass('disabled');
+                            }, 2500);
+						} else {
+							setTimeout(function() {
+								_textContainer.text('Looks like you\'ve got Unity!  Have at it!');
+								$('#play').addClass('btn-success')
+								.click(function() {
+									unityObject.embedUnity("unityPlayer", "assets/player.unity3d", 620, 349);
+								});
+							}, 2500);
+						}
+					}	
+			});
+		</script>
+		</body>
+	</html>
